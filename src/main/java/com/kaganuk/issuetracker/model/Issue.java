@@ -22,7 +22,7 @@ public class Issue {
     public static final Integer AVG_STORY_POINTS_PER_DEVELOPER = 10;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
 
