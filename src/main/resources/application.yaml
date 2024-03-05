@@ -1,0 +1,6 @@
+springdoc:
+  swagger-ui:
+    path: docs
+spring:
+  jpa:
+    defer-datasource-initialization: true

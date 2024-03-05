@@ -13,7 +13,7 @@ import lombok.*;
 public class Developer {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
 
