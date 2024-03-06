@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,6 @@ public class PlanServiceTest {
 	@Mock
 	private DeveloperRepository developerRepository;
 
-	@InjectMocks
 	private PlanService planService;
 
 	private final List<Developer> developers = new ArrayList<>();
@@ -39,6 +39,7 @@ public class PlanServiceTest {
 
 	@BeforeEach
 	public void setUp(){
+		planService = new PlanService(developerRepository, issueRepository, new ModelMapper());
 		this.createDevelopers();
 		this.createIssues();
 	}
@@ -46,7 +47,7 @@ public class PlanServiceTest {
 	@Test
 	public void testPlanIssues(){
 		when(developerRepository.findAll()).thenReturn(developers);
-		when(issueRepository.findIssuesByTypeOrderByEstimationDesc(any(Type.class))).thenReturn(issues);
+		when(issueRepository.findIssuesByTypeAndStatusOrderByEstimationDesc(any(Type.class), any(Status.class))).thenReturn(issues);
 
 		Map<String, List<PlannedStoryDto>> weeklyMappedIssues = planService.planIssues();
 
