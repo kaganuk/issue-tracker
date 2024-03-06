@@ -1,5 +1,6 @@
 package com.kaganuk.issuetracker.service;
 
+import com.kaganuk.issuetracker.enums.issue.Status;
 import com.kaganuk.issuetracker.enums.issue.Type;
 import com.kaganuk.issuetracker.model.Developer;
 import com.kaganuk.issuetracker.model.Issue;
@@ -25,12 +26,14 @@ public class PlanService {
 
     public Map<String, List<PlannedStoryDto>> planIssues() {
         List<Developer> developers = this.developerRepository.findAll();
-        List<Issue> issues = this.issueRepository.findIssuesByTypeOrderByEstimationDesc(Type.STORY);
+        List<Issue> issues = this.issueRepository.
+                findIssuesByTypeAndStatusOrderByEstimationDesc(Type.STORY, Status.ESTIMATED);
 
         return assignDevelopersToIssuesWithBestFitAlgorithm(issues, developers);
     }
 
-    private Map<String, List<PlannedStoryDto>>  assignDevelopersToIssuesWithBestFitAlgorithm(List<Issue> issues, List<Developer> developers) {
+    private Map<String, List<PlannedStoryDto>>  assignDevelopersToIssuesWithBestFitAlgorithm(
+            List<Issue> issues, List<Developer> developers) {
         int weeksRequired = 0, currentIndexForEstimationStorage;
         int storyPointsPerWeek = Issue.AVG_STORY_POINTS_PER_DEVELOPER * developers.size();
         Map<String, List<PlannedStoryDto>> weeklyGroupedIssues = new HashMap<>();
@@ -58,7 +61,8 @@ public class PlanService {
         return minimumSpaceLeftForBestWeek == storyPointsPerWeek + 1;
     }
 
-    private static BestWeek getBestWeek(Issue issue, int storyPointsPerWeek, int weeksRequired, int[] estimationStorage) {
+    private static BestWeek getBestWeek(
+            Issue issue, int storyPointsPerWeek, int weeksRequired, int[] estimationStorage) {
         int  minimumSpaceLeftForBestWeek = storyPointsPerWeek + 1, indexOfBestWeek = 0;
         for (int week = 0; week < weeksRequired; week++) {
             int spaceLeftForTheWeek = estimationStorage[week] - issue.getEstimation();
@@ -74,7 +78,8 @@ public class PlanService {
     private record BestWeek(int minimumSpaceLeft, int index) {
     }
 
-    private void addIssueToWeeklyGroupedIssues(Issue issue, int index, Map<String, List<PlannedStoryDto>> weeklyGroupedIssues) {
+    private void addIssueToWeeklyGroupedIssues(
+            Issue issue, int index, Map<String, List<PlannedStoryDto>> weeklyGroupedIssues) {
         String week = "Week " + (index + 1);
         weeklyGroupedIssues.computeIfAbsent(week, k -> new ArrayList<>());
         PlannedStoryDto plannedStoryDto = this.modelMapper.map(issue, PlannedStoryDto.class);
@@ -85,7 +90,8 @@ public class PlanService {
         storage[indexOfBestWeek] -= estimation;
     }
 
-    private static void createNewWeekForEstimation(Issue issue, int[] storage, int weeksRequired, int storyPointsPerWeek) {
+    private static void createNewWeekForEstimation(Issue issue, int[] storage, int weeksRequired,
+                                                   int storyPointsPerWeek) {
         storage[weeksRequired] = storyPointsPerWeek - issue.getEstimation();
     }
 }
