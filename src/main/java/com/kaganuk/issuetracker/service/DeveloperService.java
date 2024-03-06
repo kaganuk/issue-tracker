@@ -25,7 +25,7 @@ public class DeveloperService {
     public Developer updateDeveloper(Developer developer, Integer id) {
         Optional<Developer> devFromDb = developerRepository.findById(id);
         if (devFromDb.isEmpty())
-            throw new NoSuchEntityException(Developer.class.getSimpleName(), id);
+            throw new NoSuchEntityException(this.getClass().getSimpleName(), id);
 
         devFromDb.get().setName(developer.getName());
 
