@@ -1,6 +1,6 @@
 package com.kaganuk.issuetracker.controller;
 
-import com.kaganuk.issuetracker.model.Issue;
+import com.kaganuk.issuetracker.model.PlannedStoryDto;
 import com.kaganuk.issuetracker.service.PlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class PlanController {
     private final PlanService planService;
 
     @GetMapping
-    public Map<String, List<Issue>> getPlan() {
+    public Map<String, List<PlannedStoryDto>> getPlan() {
         return this.planService.planIssues();
     }
 }

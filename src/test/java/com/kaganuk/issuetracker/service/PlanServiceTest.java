@@ -4,6 +4,7 @@ import com.kaganuk.issuetracker.enums.issue.Status;
 import com.kaganuk.issuetracker.enums.issue.Type;
 import com.kaganuk.issuetracker.model.Developer;
 import com.kaganuk.issuetracker.model.Issue;
+import com.kaganuk.issuetracker.model.PlannedStoryDto;
 import com.kaganuk.issuetracker.repository.DeveloperRepository;
 import com.kaganuk.issuetracker.repository.IssueRepository;
 import org.junit.jupiter.api.Assertions;
@@ -17,13 +18,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class PlanServiceTests {
+public class PlanServiceTest {
 
 	@Mock
 	private IssueRepository issueRepository;
@@ -34,22 +34,21 @@ public class PlanServiceTests {
 	@InjectMocks
 	private PlanService planService;
 
-	private final Random rand = new Random();
 	private final List<Developer> developers = new ArrayList<>();
 	private final List<Issue> issues = new ArrayList<>();
 
 	@BeforeEach
-	public void setup(){
+	public void setUp(){
 		this.createDevelopers();
 		this.createIssues();
 	}
 
 	@Test
-	public void givenStoriesAndDevelopers_whenPlanIssues_thenReturnWeeklyPlannedIssues(){
+	public void testPlanIssues(){
 		when(developerRepository.findAll()).thenReturn(developers);
 		when(issueRepository.findIssuesByTypeOrderByEstimationDesc(any(Type.class))).thenReturn(issues);
 
-		Map<String, List<Issue>> weeklyMappedIssues = planService.planIssues();
+		Map<String, List<PlannedStoryDto>> weeklyMappedIssues = planService.planIssues();
 
         Assertions.assertTrue(weeklyMappedIssues.containsKey("Week 1"));
         Assertions.assertTrue(weeklyMappedIssues.containsKey("Week 2"));
@@ -58,9 +57,9 @@ public class PlanServiceTests {
 
 		List<Integer> expectedTotalEstimations = List.of(30, 30 , 2);
 		int week = 0;
-		for (List<Issue> issuesOfWeek : weeklyMappedIssues.values()) {
+		for (List<PlannedStoryDto> issuesOfWeek : weeklyMappedIssues.values()) {
 			int totalEstimationOfWeek = 0;
-			for (Issue issue : issuesOfWeek) {
+			for (PlannedStoryDto issue : issuesOfWeek) {
 				totalEstimationOfWeek += issue.getEstimation();
 			}
 			Assertions.assertTrue(totalEstimationOfWeek <= expectedTotalEstimations.get(week));
