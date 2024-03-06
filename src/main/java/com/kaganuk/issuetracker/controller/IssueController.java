@@ -1,9 +1,13 @@
 package com.kaganuk.issuetracker.controller;
 
-import com.kaganuk.issuetracker.model.Issue;
+import com.kaganuk.issuetracker.model.IssueCreateDto;
+import com.kaganuk.issuetracker.model.IssueDto;
 import com.kaganuk.issuetracker.service.IssueService;
+import com.kaganuk.issuetracker.validation.IssueValidator;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -13,22 +17,28 @@ import org.springframework.web.bind.annotation.*;
 public class IssueController {
 
     private final IssueService issueService;
+    private final IssueValidator issueValidator;
+
+    @InitBinder
+    protected void initBinder(ServletRequestDataBinder binder) {
+        binder.addValidators(issueValidator);
+    }
 
     @GetMapping("{id}")
-    public Issue getIssue(@PathVariable Integer id) {
+    public IssueDto getIssue(@PathVariable Integer id) {
         return this.issueService.getIssue(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Issue createIssue(@RequestBody Issue issue) {
-        return this.issueService.saveIssue(issue);
+    public IssueDto createIssue(@RequestBody @Valid IssueCreateDto issueDto) {
+        return this.issueService.saveIssue(issueDto);
     }
 
     @PatchMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Issue updateIssue(@PathVariable Integer id, @RequestBody Issue issue) {
-        return this.issueService.updateIssue(issue, id);
+    public IssueDto updateIssue(@PathVariable Integer id, @RequestBody @Valid IssueDto issueDto) {
+        return this.issueService.updateIssue(issueDto, id);
     }
 
     @DeleteMapping("{id}")

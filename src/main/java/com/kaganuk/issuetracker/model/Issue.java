@@ -19,11 +19,10 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Issue {
-    public static final Integer AVG_STORY_POINTS_PER_DEVELOPER = 10;
+    public static final int AVG_STORY_POINTS_PER_DEVELOPER = 10;
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
 
     @Column
@@ -48,6 +47,5 @@ public class Issue {
     private Developer assignee;
 
     @CreatedDate
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Timestamp createdAt;
 }
