@@ -31,13 +31,13 @@ public class Issue {
     @Column
     private String description;
 
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     private Type type;
 
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     private Status status;
 
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     private Priority priority;
 
     @Column
