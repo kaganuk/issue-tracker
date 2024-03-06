@@ -32,11 +32,11 @@ public class IssueService {
     }
 
     public IssueDto updateIssue(IssueDto issueDto, Integer id) {
-        Issue issue = getIssueOrThrowException(id);
-        Issue issueRequest = modelMapper.map(issueDto, Issue.class);
-        updateExistingIssue(issue, issueRequest);
+        Issue issueFromDb = getIssueOrThrowException(id);
+        Issue issueFromRequest = modelMapper.map(issueDto, Issue.class);
+        updateExistingIssue(issueFromDb, issueFromRequest);
 
-        return modelMapper.map(issueRepository.save(issue), IssueDto.class);
+        return modelMapper.map(issueRepository.save(issueFromDb), IssueDto.class);
     }
 
     public void deleteIssue(Integer id) {
