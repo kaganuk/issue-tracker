@@ -36,7 +36,7 @@ public class IssueServiceTest {
 
     private Issue issue;
     private Developer developer;
-    private Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
+    private final Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
     @BeforeEach
     public void setUp() {
         developer = Developer.builder()
