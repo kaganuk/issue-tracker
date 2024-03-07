@@ -21,3 +21,5 @@ REST API for an issue tracker for a small team of developers.
 * I created a [GlobalExceptionHandler](src/main/java/com/kaganuk/issuetracker/exception/GlobalExceptionHandler.java) for being able to control the API responses for different type of exceptions application creates.
 * I used a first fit decreasing algorithm to create the least amount of weeks from given stories. Since we know estimations before calculation this was easiest to implement and faster to solve the problem. A short explanation of how the algorithm works: <br />
 ![first-fit-decreasing-algorithm](https://github.com/kaganuk/issue-tracker/assets/12846311/ba0d6c9a-9cd5-4319-962c-fe7638dc415f)
+* Auto-generated swagger docs: <br />
+<img width="1503" alt="image" src="https://github.com/kaganuk/issue-tracker/assets/12846311/f230c507-37b7-451f-a208-56be63fdb4a5">
