@@ -23,17 +23,17 @@ class IssueValidatorTest {
     }
 
     @Test
-    void supports_WhenValidClass_ShouldReturnTrue() {
+    void supportsWhenValidClassShouldReturnTrue() {
         assertTrue(issueValidator.supports(IssueCreateDto.class));
     }
 
     @Test
-    void supports_WhenInvalidClass_ShouldReturnFalse() {
+    void supportsWhenInvalidClassShouldReturnFalse() {
         assertFalse(issueValidator.supports(String.class));
     }
 
     @Test
-    void validate_WhenTypeIsNull_ShouldRejectTypeField() {
+    void validateWhenTypeIsNullShouldRejectTypeField() {
         IssueCreateDto request = new IssueCreateDto();
         Errors errors = new BeanPropertyBindingResult(request, "request");
         issueValidator.validate(request, errors);
@@ -43,7 +43,7 @@ class IssueValidatorTest {
     }
 
     @Test
-    void validate_WhenTypeIsBugAndEstimationNotNull_ShouldRejectEstimationField() {
+    void validateWhenTypeIsBugAndEstimationNotNullShouldRejectEstimationField() {
         IssueCreateDto request = new IssueCreateDto();
         request.setType(Type.BUG);
         request.setEstimation(5); // Not allowed for bugs
@@ -55,7 +55,7 @@ class IssueValidatorTest {
     }
 
     @Test
-    void validate_WhenTypeIsBugAndPriorityIsNull_ShouldRejectPriorityField() {
+    void validateWhenTypeIsBugAndPriorityIsNullShouldRejectPriorityField() {
         IssueCreateDto request = new IssueCreateDto();
         request.setType(Type.BUG);
         Errors errors = new BeanPropertyBindingResult(request, "request");
@@ -66,7 +66,7 @@ class IssueValidatorTest {
     }
 
     @Test
-    void validate_WhenTypeIsBugAndStatusIsInvalid_ShouldRejectStatusField() {
+    void validateWhenTypeIsBugAndStatusIsInvalidShouldRejectStatusField() {
         IssueCreateDto request = new IssueCreateDto();
         request.setType(Type.BUG);
         request.setStatus(Status.ESTIMATED); // Invalid status for bugs
@@ -78,7 +78,7 @@ class IssueValidatorTest {
     }
 
     @Test
-    void validate_WhenTypeIsStoryAndStatusIsEstimatedAndEstimationIsNull_ShouldRejectEstimationField() {
+    void validateWhenTypeIsStoryAndStatusIsEstimatedAndEstimationIsNullShouldRejectEstimationField() {
         IssueCreateDto request = new IssueCreateDto();
         request.setType(Type.STORY);
         request.setStatus(Status.ESTIMATED);
@@ -90,7 +90,7 @@ class IssueValidatorTest {
     }
 
     @Test
-    void validate_WhenTypeIsStoryAndEstimationIsOutOfRange_ShouldRejectEstimationField() {
+    void validateWhenTypeIsStoryAndEstimationIsOutOfRangeShouldRejectEstimationField() {
         IssueCreateDto request = new IssueCreateDto();
         request.setType(Type.STORY);
         request.setEstimation(15); // Invalid estimation range
@@ -102,7 +102,7 @@ class IssueValidatorTest {
     }
 
     @Test
-    void validate_WhenTypeIsStoryAndPriorityIsNotNull_ShouldRejectPriorityField() {
+    void validateWhenTypeIsStoryAndPriorityIsNotNullShouldRejectPriorityField() {
         IssueCreateDto request = new IssueCreateDto();
         request.setType(Type.STORY);
         request.setPriority(Priority.CRITICAL); // Priority not allowed for stories
@@ -114,7 +114,7 @@ class IssueValidatorTest {
     }
 
     @Test
-    void validate_WhenTypeIsStoryAndStatusIsInvalid_ShouldRejectStatusField() {
+    void validateWhenTypeIsStoryAndStatusIsInvalidShouldRejectStatusField() {
         IssueCreateDto request = new IssueCreateDto();
         request.setType(Type.STORY);
         request.setStatus(Status.VERIFIED); // Invalid status for stories

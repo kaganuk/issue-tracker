@@ -32,7 +32,7 @@ class DeveloperServiceTest {
     void setUp() {}
 
     @Test
-    void getDevelopers_Success() {
+    void getDevelopersSuccess() {
         Developer dev1 = Developer.builder().id(1).name("John Doe").build();
         Developer dev2 = Developer.builder().id(1).name("George").build();
         when(developerRepository.findAll()).thenReturn(Arrays.asList(dev1, dev2));
@@ -44,7 +44,7 @@ class DeveloperServiceTest {
     }
 
     @Test
-    void saveDeveloper_Success() {
+    void saveDeveloperSuccess() {
         Developer dev = Developer.builder().id(1).name("John Doe").build();
         when(developerRepository.save(any(Developer.class))).thenReturn(dev);
 
@@ -57,7 +57,7 @@ class DeveloperServiceTest {
     }
 
     @Test
-    void updateDeveloper_Success() {
+    void updateDeveloperSuccess() {
         Developer existingDeveloper = Developer.builder().id(1).name("John Doe").build();
         when(developerRepository.findById(1)).thenReturn(Optional.of(existingDeveloper));
         when(developerRepository.save(any(Developer.class))).thenReturn(existingDeveloper);
@@ -72,14 +72,14 @@ class DeveloperServiceTest {
     }
 
     @Test
-    void updateDeveloper_NotFound() {
+    void updateDeveloperNotFound() {
         when(developerRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(NoSuchEntityException.class, () -> developerService.updateDeveloper(new Developer(), 1));
     }
 
     @Test
-    void deleteDeveloper_Success() {
+    void deleteDeveloperSuccess() {
         when(developerRepository.existsById(1)).thenReturn(true);
 
         developerService.deleteDeveloper(1);
@@ -88,7 +88,7 @@ class DeveloperServiceTest {
     }
 
     @Test
-    void deleteDeveloper_NotFound() {
+    void deleteDeveloperNotFound() {
         when(developerRepository.existsById(1)).thenReturn(false);
 
         assertThrows(NoSuchEntityException.class, () -> developerService.deleteDeveloper(1));
