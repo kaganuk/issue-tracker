@@ -4,14 +4,13 @@ import com.kaganuk.issuetracker.enums.issue.Status;
 import com.kaganuk.issuetracker.enums.issue.Type;
 import com.kaganuk.issuetracker.model.Developer;
 import com.kaganuk.issuetracker.model.Issue;
-import com.kaganuk.issuetracker.model.PlannedStoryDto;
+import com.kaganuk.issuetracker.model.PlannedStoryResponseDto;
 import com.kaganuk.issuetracker.repository.DeveloperRepository;
 import com.kaganuk.issuetracker.repository.IssueRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
@@ -48,7 +47,7 @@ public class PlanServiceTest {
 		when(developerRepository.count()).thenReturn(3L);
 		when(issueRepository.findIssuesByTypeAndStatusOrderByEstimationDesc(any(Type.class), any(Status.class))).thenReturn(issues);
 
-		Map<String, List<PlannedStoryDto>> weeklyMappedIssues = planService.planIssues();
+		Map<String, List<PlannedStoryResponseDto>> weeklyMappedIssues = planService.planIssues();
 
         Assertions.assertTrue(weeklyMappedIssues.containsKey("Week 1"));
         Assertions.assertTrue(weeklyMappedIssues.containsKey("Week 2"));
@@ -57,9 +56,9 @@ public class PlanServiceTest {
 
 		List<Integer> expectedTotalEstimations = List.of(30, 30 , 2);
 		int week = 0;
-		for (List<PlannedStoryDto> issuesOfWeek : weeklyMappedIssues.values()) {
+		for (List<PlannedStoryResponseDto> issuesOfWeek : weeklyMappedIssues.values()) {
 			int totalEstimationOfWeek = 0;
-			for (PlannedStoryDto issue : issuesOfWeek) {
+			for (PlannedStoryResponseDto issue : issuesOfWeek) {
 				totalEstimationOfWeek += issue.getEstimation();
 			}
             Assertions.assertEquals(totalEstimationOfWeek, (int) expectedTotalEstimations.get(week));

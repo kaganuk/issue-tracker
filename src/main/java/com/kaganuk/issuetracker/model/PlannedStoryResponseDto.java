@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @RequiredArgsConstructor
-public class PlannedStoryDto {
+public class PlannedStoryResponseDto {
     protected Integer id;
     protected Integer estimation;
     protected Status status;

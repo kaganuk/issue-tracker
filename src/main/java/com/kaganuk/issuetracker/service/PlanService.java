@@ -2,9 +2,8 @@ package com.kaganuk.issuetracker.service;
 
 import com.kaganuk.issuetracker.enums.issue.Status;
 import com.kaganuk.issuetracker.enums.issue.Type;
-import com.kaganuk.issuetracker.model.Developer;
 import com.kaganuk.issuetracker.model.Issue;
-import com.kaganuk.issuetracker.model.PlannedStoryDto;
+import com.kaganuk.issuetracker.model.PlannedStoryResponseDto;
 import com.kaganuk.issuetracker.repository.DeveloperRepository;
 import com.kaganuk.issuetracker.repository.IssueRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ public class PlanService {
     private final ModelMapper modelMapper;
     private Long developerSize = 0L;
 
-    public Map<String, List<PlannedStoryDto>> planIssues() {
+    public Map<String, List<PlannedStoryResponseDto>> planIssues() {
         developerSize = this.developerRepository.count();
         List<Issue> issues = this.issueRepository.
                 findIssuesByTypeAndStatusOrderByEstimationDesc(Type.STORY, Status.ESTIMATED);
@@ -33,10 +32,10 @@ public class PlanService {
         return assignDevelopersToIssuesWithFirstFitDecreasingAlgorithm(issues);
     }
 
-    private Map<String, List<PlannedStoryDto>> assignDevelopersToIssuesWithFirstFitDecreasingAlgorithm(
+    private Map<String, List<PlannedStoryResponseDto>> assignDevelopersToIssuesWithFirstFitDecreasingAlgorithm(
             List<Issue> issues) {
         int amountOfWeeks = 0;
-        Map<String, List<PlannedStoryDto>> weeklyGroupedIssues = new HashMap<>();
+        Map<String, List<PlannedStoryResponseDto>> weeklyGroupedIssues = new HashMap<>();
         int[] estimationStorage = new int[issues.size()];
 
         for (Issue issue : issues) {
@@ -53,7 +52,7 @@ public class PlanService {
                                                        int week,
                                                        int amountOfWeeks,
                                                        int[] estimationStorage,
-                                                       Map<String, List<PlannedStoryDto>> weeklyGroupedIssues) {
+                                                       Map<String, List<PlannedStoryResponseDto>> weeklyGroupedIssues) {
         if (week == amountOfWeeks) {
             createNewWeekForEstimation(issue, estimationStorage, amountOfWeeks);
             addIssueToWeeklyGroupedIssues(issue, amountOfWeeks, weeklyGroupedIssues);
@@ -65,7 +64,7 @@ public class PlanService {
     private int ifPossibleAddIssueToFirstWeekFitting(Issue issue,
                                                      int amountOfWeeks,
                                                      int[] estimationStorage,
-                                                     Map<String, List<PlannedStoryDto>> weeklyGroupedIssues) {
+                                                     Map<String, List<PlannedStoryResponseDto>> weeklyGroupedIssues) {
         int week;
         for (week = 0; week < amountOfWeeks; week++) {
             boolean isSpaceAvailableForTheWeek = estimationStorage[week] >= issue.getEstimation();
@@ -79,11 +78,11 @@ public class PlanService {
     }
 
     private void addIssueToWeeklyGroupedIssues(
-            Issue issue, int index, Map<String, List<PlannedStoryDto>> weeklyGroupedIssues) {
+            Issue issue, int index, Map<String, List<PlannedStoryResponseDto>> weeklyGroupedIssues) {
         String week = "Week " + (index + 1);
         weeklyGroupedIssues.computeIfAbsent(week, k -> new ArrayList<>());
-        PlannedStoryDto plannedStoryDto = this.modelMapper.map(issue, PlannedStoryDto.class);
-        weeklyGroupedIssues.get(week).add(plannedStoryDto);
+        PlannedStoryResponseDto plannedStoryResponseDto = this.modelMapper.map(issue, PlannedStoryResponseDto.class);
+        weeklyGroupedIssues.get(week).add(plannedStoryResponseDto);
     }
 
     private static void removeEstimationFromFirstWeekPossible(int estimation, int[] storage, int index) {
