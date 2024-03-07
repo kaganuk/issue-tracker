@@ -102,6 +102,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(apiErrorDetails, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = {NoDevelopersFoundException.class, NoIssuesFoundException.class})
+    public ResponseEntity<ApiErrorDetails> handleNoDevelopersFoundOrNoIssuesFoundException(RuntimeException ex) {
+
+        ApiErrorDetails apiErrorDetails = ApiErrorDetails.builder()
+                .errorMessage("You need to have some issues and developers created for planning.")
+                .exceptionName(ex.getClass().getSimpleName())
+                .currentTime(LocalDateTime.now())
+                .build();
+
+        logApiErrorDetails(apiErrorDetails);
+
+        return new ResponseEntity<>(apiErrorDetails, HttpStatus.BAD_REQUEST);
+    }
+
     private static void logApiErrorDetails(ApiErrorDetails apiErrorDetails) {
         log.error("errorMessage: {} exceptionName: {} currentTime: {}",
                 apiErrorDetails.getErrorMessage(),

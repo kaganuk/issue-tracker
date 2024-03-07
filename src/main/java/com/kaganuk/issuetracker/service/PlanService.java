@@ -2,6 +2,8 @@ package com.kaganuk.issuetracker.service;
 
 import com.kaganuk.issuetracker.enums.issue.Status;
 import com.kaganuk.issuetracker.enums.issue.Type;
+import com.kaganuk.issuetracker.exception.NoDevelopersFoundException;
+import com.kaganuk.issuetracker.exception.NoIssuesFoundException;
 import com.kaganuk.issuetracker.model.Issue;
 import com.kaganuk.issuetracker.model.PlannedStoryResponseDto;
 import com.kaganuk.issuetracker.repository.DeveloperRepository;
@@ -26,8 +28,13 @@ public class PlanService {
 
     public Map<String, List<PlannedStoryResponseDto>> planIssues() {
         developerSize = this.developerRepository.count();
+        if (developerSize == 0L)
+            throw new NoDevelopersFoundException();
+
         List<Issue> issues = this.issueRepository.
                 findIssuesByTypeAndStatusOrderByEstimationDesc(Type.STORY, Status.ESTIMATED);
+        if (issues.isEmpty())
+            throw new NoIssuesFoundException();
 
         return assignDevelopersToIssuesWithFirstFitDecreasingAlgorithm(issues);
     }
