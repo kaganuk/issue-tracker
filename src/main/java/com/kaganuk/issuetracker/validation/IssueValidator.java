@@ -56,7 +56,7 @@ public class IssueValidator implements Validator {
         List<Status> availableStatusesForBugs = List.of(Status.NEW, Status.VERIFIED, Status.RESOLVED);
         if (request.getStatus() != null && !availableStatusesForBugs.contains(request.getStatus())) {
             String field = "status";
-            errors.rejectValue(field, field + ".invalid" , " for type bug cannot be filled with the given value. Supported statuses for a bug: " + availableStatusesForBugs);
+            errors.rejectValue(field, field + ".invalid" , field + " for type bug cannot be filled with the given value. Supported statuses for a bug: " + availableStatusesForBugs);
         }
     }
 
