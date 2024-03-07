@@ -40,13 +40,12 @@ public class PlanServiceTest {
 	@BeforeEach
 	public void setUp(){
 		planService = new PlanService(developerRepository, issueRepository, new ModelMapper());
-		this.createDevelopers();
 		this.createIssues();
 	}
 
 	@Test
 	public void testPlanIssues(){
-		when(developerRepository.findAll()).thenReturn(developers);
+		when(developerRepository.count()).thenReturn(3L);
 		when(issueRepository.findIssuesByTypeAndStatusOrderByEstimationDesc(any(Type.class), any(Status.class))).thenReturn(issues);
 
 		Map<String, List<PlannedStoryDto>> weeklyMappedIssues = planService.planIssues();
@@ -63,18 +62,11 @@ public class PlanServiceTest {
 			for (PlannedStoryDto issue : issuesOfWeek) {
 				totalEstimationOfWeek += issue.getEstimation();
 			}
-			Assertions.assertTrue(totalEstimationOfWeek <= expectedTotalEstimations.get(week));
+            Assertions.assertEquals(totalEstimationOfWeek, (int) expectedTotalEstimations.get(week));
 			week++;
 		}
 	}
 
-	private void createDevelopers() {
-		for (int i = 0; i < 3; i++) {
-			developers.add(
-					Developer.builder().id(i).name("Developer " + (i+1)).build()
-			);
-		}
-	}
 
 	private void createIssues() {
 		List<Integer> estimations = List.of(10, 9, 8, 7, 5, 5, 5, 4, 2, 2, 2, 2, 1);

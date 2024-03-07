@@ -23,59 +23,59 @@ public class PlanService {
     private final DeveloperRepository developerRepository;
     private final IssueRepository issueRepository;
     private final ModelMapper modelMapper;
+    private Long developerSize = 0L;
 
     public Map<String, List<PlannedStoryDto>> planIssues() {
-        List<Developer> developers = this.developerRepository.findAll();
+        developerSize = this.developerRepository.count();
         List<Issue> issues = this.issueRepository.
                 findIssuesByTypeAndStatusOrderByEstimationDesc(Type.STORY, Status.ESTIMATED);
 
-        return assignDevelopersToIssuesWithBestFitAlgorithm(issues, developers);
+        return assignDevelopersToIssuesWithFirstFitDecreasingAlgorithm(issues);
     }
 
-    private Map<String, List<PlannedStoryDto>>  assignDevelopersToIssuesWithBestFitAlgorithm(
-            List<Issue> issues, List<Developer> developers) {
-        int weeksRequired = 0, currentIndexForEstimationStorage;
-        int storyPointsPerWeek = Issue.AVG_STORY_POINTS_PER_DEVELOPER * developers.size();
+    private Map<String, List<PlannedStoryDto>> assignDevelopersToIssuesWithFirstFitDecreasingAlgorithm(
+            List<Issue> issues) {
+        int amountOfWeeks = 0;
         Map<String, List<PlannedStoryDto>> weeklyGroupedIssues = new HashMap<>();
         int[] estimationStorage = new int[issues.size()];
 
         for (Issue issue : issues) {
-            BestWeek bestWeek = getBestWeek(issue, storyPointsPerWeek, weeksRequired, estimationStorage);
+            int week = ifPossibleAddIssueToFirstWeekFitting(issue, amountOfWeeks, estimationStorage, weeklyGroupedIssues);
 
-            if (noExistingWeekAvailable(bestWeek.minimumSpaceLeft(), storyPointsPerWeek)) {
-                createNewWeekForEstimation(issue, estimationStorage, weeksRequired, storyPointsPerWeek);
-                currentIndexForEstimationStorage = weeksRequired;
-                weeksRequired++;
-            } else {
-                removeEstimationFromBestWeekExisting(issue.getEstimation(), estimationStorage, bestWeek.index());
-                currentIndexForEstimationStorage = bestWeek.index();
-            }
-
-            addIssueToWeeklyGroupedIssues(issue, currentIndexForEstimationStorage, weeklyGroupedIssues);
+            amountOfWeeks = createNewWeekIfThereIsNoSpaceAvailable(
+                    issue, week, amountOfWeeks, estimationStorage, weeklyGroupedIssues);
         }
 
         return weeklyGroupedIssues;
     }
 
-    private static boolean noExistingWeekAvailable(int minimumSpaceLeftForBestWeek, int storyPointsPerWeek) {
-        return minimumSpaceLeftForBestWeek == storyPointsPerWeek + 1;
+    private int createNewWeekIfThereIsNoSpaceAvailable(Issue issue,
+                                                       int week,
+                                                       int amountOfWeeks,
+                                                       int[] estimationStorage,
+                                                       Map<String, List<PlannedStoryDto>> weeklyGroupedIssues) {
+        if (week == amountOfWeeks) {
+            createNewWeekForEstimation(issue, estimationStorage, amountOfWeeks);
+            addIssueToWeeklyGroupedIssues(issue, amountOfWeeks, weeklyGroupedIssues);
+            amountOfWeeks++;
+        }
+        return amountOfWeeks;
     }
 
-    private static BestWeek getBestWeek(
-            Issue issue, int storyPointsPerWeek, int weeksRequired, int[] estimationStorage) {
-        int  minimumSpaceLeftForBestWeek = storyPointsPerWeek + 1, indexOfBestWeek = 0;
-        for (int week = 0; week < weeksRequired; week++) {
-            int spaceLeftForTheWeek = estimationStorage[week] - issue.getEstimation();
+    private int ifPossibleAddIssueToFirstWeekFitting(Issue issue,
+                                                     int amountOfWeeks,
+                                                     int[] estimationStorage,
+                                                     Map<String, List<PlannedStoryDto>> weeklyGroupedIssues) {
+        int week;
+        for (week = 0; week < amountOfWeeks; week++) {
             boolean isSpaceAvailableForTheWeek = estimationStorage[week] >= issue.getEstimation();
-            if (isSpaceAvailableForTheWeek && spaceLeftForTheWeek < minimumSpaceLeftForBestWeek) {
-                indexOfBestWeek = week;
-                minimumSpaceLeftForBestWeek = spaceLeftForTheWeek;
+            if (isSpaceAvailableForTheWeek) {
+                removeEstimationFromFirstWeekPossible(issue.getEstimation(), estimationStorage, week);
+                addIssueToWeeklyGroupedIssues(issue, week, weeklyGroupedIssues);
+                break;
             }
         }
-        return new BestWeek(minimumSpaceLeftForBestWeek, indexOfBestWeek);
-    }
-
-    private record BestWeek(int minimumSpaceLeft, int index) {
+        return week;
     }
 
     private void addIssueToWeeklyGroupedIssues(
@@ -86,12 +86,12 @@ public class PlanService {
         weeklyGroupedIssues.get(week).add(plannedStoryDto);
     }
 
-    private static void removeEstimationFromBestWeekExisting(int estimation, int[] storage, int indexOfBestWeek) {
-        storage[indexOfBestWeek] -= estimation;
+    private static void removeEstimationFromFirstWeekPossible(int estimation, int[] storage, int index) {
+        storage[index] -= estimation;
     }
 
-    private static void createNewWeekForEstimation(Issue issue, int[] storage, int weeksRequired,
-                                                   int storyPointsPerWeek) {
-        storage[weeksRequired] = storyPointsPerWeek - issue.getEstimation();
+    private void createNewWeekForEstimation(Issue issue, int[] storage, int index) {
+        int storyPointsPerWeek = Issue.AVG_STORY_POINTS_PER_DEVELOPER * developerSize.intValue();
+        storage[index] = storyPointsPerWeek - issue.getEstimation();
     }
 }
