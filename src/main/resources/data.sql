@@ -22,7 +22,7 @@ INSERT INTO ISSUE (title, description, type, status, priority, estimation, assig
     ('Story 14', 'This is a sample issue description 14', 'STORY', 'ESTIMATED', null, 4, null, NOW()),
     ('Story 15', 'This is a sample issue description 15', 'STORY', 'ESTIMATED', null, 9, null, NOW());
 
--- Insert stories in different new,completed statuses to show they are not included in planning
+-- Insert stories in new,completed statuses to show they are not included in planning
  INSERT INTO ISSUE (title, description, type, status, priority, estimation, assignee_id, created_at) VALUES
     ('Story 16', 'This is a sample issue description 16', 'STORY', 'COMPLETED', null, 9, null, NOW()),
     ('Story 17', 'This is a sample issue description 17', 'STORY', 'NEW', null, 9, null, NOW()),
