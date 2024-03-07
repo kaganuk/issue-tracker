@@ -55,7 +55,8 @@ public class IssueValidator implements Validator {
         }
         List<Status> availableStatusesForBugs = List.of(Status.NEW, Status.VERIFIED, Status.RESOLVED);
         if (request.getStatus() != null && !availableStatusesForBugs.contains(request.getStatus())) {
-            errors.rejectValue("status", "status.null", " for type bug cannot be filled with the given value. Supported statuses for a bug: " + availableStatusesForBugs);
+            String field = "status";
+            errors.rejectValue(field, field + ".invalid" , " for type bug cannot be filled with the given value. Supported statuses for a bug: " + availableStatusesForBugs);
         }
     }
 
@@ -75,7 +76,7 @@ public class IssueValidator implements Validator {
         List<Status> availableStatusesForStories = List.of(Status.NEW, Status.ESTIMATED, Status.COMPLETED);
         if (request.getStatus() != null && !availableStatusesForStories.contains(request.getStatus())) {
             String field = "status";
-            errors.rejectValue(field, field + ".null", field + " for type story cannot be filled with the given value. Supported statuses for a story: " + availableStatusesForStories);
+            errors.rejectValue(field, field + ".invalid", field + " for type story cannot be filled with the given value. Supported statuses for a story: " + availableStatusesForStories);
         }
     }
 }

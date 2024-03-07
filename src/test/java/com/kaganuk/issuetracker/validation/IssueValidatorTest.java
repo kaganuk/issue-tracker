@@ -74,7 +74,7 @@ class IssueValidatorTest {
         issueValidator.validate(request, errors);
 
         assertTrue(errors.hasFieldErrors("status"));
-        assertEquals("status.null", errors.getFieldError("status").getCode());
+        assertEquals("status.invalid", errors.getFieldError("status").getCode());
     }
 
     @Test
@@ -122,6 +122,6 @@ class IssueValidatorTest {
         issueValidator.validate(request, errors);
 
         assertTrue(errors.hasFieldErrors("status"));
-        assertEquals("status.null", errors.getFieldError("status").getCode());
+        assertEquals("status.invalid", errors.getFieldError("status").getCode());
     }
 }
